@@ -28,7 +28,7 @@ def still_music():
 	while True:
 		random.shuffle(music_list)
 		for song in music_list:
-			song_path = os.path.join(musicPath, song)
+			song_path = os.path.join("music", song)
 			omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', song_path],
 										  stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
 			if config.switch_used is True:
@@ -46,7 +46,7 @@ def still_music():
 
 
 def play_video():
-	omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', 'video/{}'.format(video["title"]), '--loop', '-b'],
+	omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', 'video/{}'.format(config.video["title"]), '--loop', '-b'],
 								  stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
 	while not switch[0].is_pressed and not switch[1].is_pressed and omxprocess.poll() is None:
 		sleep(1)
@@ -56,12 +56,12 @@ def play_video():
 
 
 def download_video():
-	if not os.path.exists('video/{}'.format(video["title"])):
-		gdd.download_file_from_google_drive(video["drive_id"], 'video/{}'.format(video["title"]))
+	if not os.path.exists('video/{}'.format(config.video["title"])):
+		gdd.download_file_from_google_drive(config.video["drive_id"], 'video/{}'.format(config.video["title"]))
 
 
 def load_framebuffer():
-	if use_temple_image is True:
+	if config.use_temple_image is True:
 		image = "temple.jpg"
 	else:
 		today = date.today().strftime("%m/%d/%y")
@@ -78,8 +78,8 @@ def run_switch():
 	load_framebuffer()
 	while True:
 		if switch[0].is_pressed:  # RTMP server
-			if config.rtmp_enabled is True:
-				rtmp_stream()
+			if config.rmtp_enabled is True:
+				rmtp_stream()
 			else:
 				still_music()
 		elif switch[1].is_pressed:  # Music Only
