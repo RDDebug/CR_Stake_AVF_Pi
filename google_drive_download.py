@@ -35,5 +35,5 @@ def save_response_content(response, destination):
 
 if __name__ == "__main__":
     file_id = '1mhGiDygE3X47jujLoYqewwhEJncvD5cP'
-    destination = '~/test_download'
+    destination = '/home/pi/test_download'
     download_file_from_google_drive(file_id, destination)
