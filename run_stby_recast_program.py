@@ -46,7 +46,7 @@ def still_music():
 
 
 def play_video():
-	omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', 'video/standby_video.mp4', '--loop', '-b'],
+	omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', 'video/touch_the_temple.mp4', '--loop', '-b'],
 								  stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
 	while not switch[0].is_pressed and not switch[1].is_pressed and omxprocess.poll() is None:
 		sleep(1)
@@ -62,9 +62,9 @@ def download_video():
 	# 	urllib.urlretrieve(videoPath, "standby_video.mp4")
 	# if not os.path.isfile(filename):
 		# urllib.urlretrieve(url, filename)
-	if not os.path.exists('video/Touch_the_temple.mp4'):
+	if not os.path.exists('video/touch_the_temple.mp4'):
 		# urllib.urlretrieve(videoPath, "video/standby_video.mp4")
-		gdd.download_file_from_google_drive(video_id, "video/Touch_the_temple.mp4")
+		gdd.download_file_from_google_drive(video_id, "video/touch_the_temple.mp4")
 
 
 def load_framebuffer():
@@ -82,13 +82,13 @@ def run():
 	download_video()
 	print("Download complete")
 	load_framebuffer()
-	while True:
-		if switch[0].is_pressed:  # RTMP server
-			rtmp_stream()
-		elif switch[1].is_pressed:  # Music Only
-			still_music()
-		else:  # Touch the Temple
-			play_video()
+	# while True:
+	if switch[0].is_pressed:  # RTMP server
+		rtmp_stream()
+	elif switch[1].is_pressed:  # Music Only
+		still_music()
+	else:  # Touch the Temple
+		play_video()
 
 
 # Main program logic follows:
