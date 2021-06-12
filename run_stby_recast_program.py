@@ -3,7 +3,7 @@ import random
 import urllib
 import signal
 import subprocess
-import var.config as config
+import config
 import google_drive_download as gdd
 from datetime import date
 from time import sleep
