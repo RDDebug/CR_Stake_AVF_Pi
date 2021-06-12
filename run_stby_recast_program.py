@@ -62,7 +62,7 @@ def download_video():
 	# if not os.path.isfile(filename):
 		# urllib.urlretrieve(url, filename)
 	if not os.path.exists('video/Touch_the_temple.mp4'):
-		urllib.urlretrieve(url, "video/{}".format(filename))
+		urllib.urlretrieve(videoPath, "video/{}".format(filename))
 
 
 def load_framebuffer():
