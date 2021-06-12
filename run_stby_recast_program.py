@@ -1,3 +1,5 @@
+#  author: Jason Austin, Cedar Rapids Iowa Stake
+#  date last modified: 12-jun-2021
 import os
 import random
 import urllib
@@ -9,18 +11,11 @@ from datetime import date
 from time import sleep
 from gpiozero import Button
 
-video_id = "1mhGiDygE3X47jujLoYqewwhEJncvD5cP"  # "/videos/Touch_the_temple.mp4"
-rtmpPath = "rtmp://127.0.0.1:1936/live/xyz"
-
-seasons = ["Winter", "Winter", "Spring", "Spring", "Spring", "Summer",
-			"Summer", "Summer", "Fall", "Fall", "Fall", "Winter"]
-
 switch = [Button(23), Button(24)]
-mode = 1
 
 
 def rmtp_stream():
-	omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', rtmpPath],
+	omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', config.rtmpPath],
 								  stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
 	while switch[0].is_pressed and omxprocess.poll() is None:
 		sleep(1)
@@ -29,7 +24,7 @@ def rmtp_stream():
 
 
 def still_music():
-	music_list = os.listdir("/music")
+	music_list = os.listdir("music")
 	while True:
 		random.shuffle(music_list)
 		for song in music_list:
@@ -51,7 +46,7 @@ def still_music():
 
 
 def play_video():
-	omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', 'video/touch_the_temple.mp4', '--loop', '-b'],
+	omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', 'video/{}'.format(video["title"]), '--loop', '-b'],
 								  stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
 	while not switch[0].is_pressed and not switch[1].is_pressed and omxprocess.poll() is None:
 		sleep(1)
@@ -61,26 +56,22 @@ def play_video():
 
 
 def download_video():
-	if not os.path.exists('video/touch_the_temple.mp4'):
-		gdd.download_file_from_google_drive(video_id, "video/touch_the_temple.mp4")
+	if not os.path.exists('video/{}'.format(video["title"])):
+		gdd.download_file_from_google_drive(video["drive_id"], 'video/{}'.format(video["title"]))
 
 
 def load_framebuffer():
 	if use_temple_image is True:
-		image = "temple"
+		image = "temple.jpg"
 	else:
 		today = date.today().strftime("%m/%d/%y")
-		cur_season = seasons[int(today[0:2])]
+		cur_season = config.seasons[int(today[0:2])]
 		image = "{}stakecenter.jpg".format(cur_season)
 
-	os.system('fbi -a --noverbose -T 1 -t 15 "/images/{}"'.format(image))
+	os.system('fbi -a --noverbose -T 1 -t 15 "images/{}"'.format(image))
 
 
 def run_switch():
-	print("Waiting for frame buffer to load")
-	for cnt in range(10, 0, -1):
-		print(cnt)
-		sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
 	print("Downloading video if missing")
 	download_video()
 	print("Download complete")
@@ -101,10 +92,6 @@ def run_switch():
 
 
 def run_no_switch():
-	print("Waiting for frame buffer to load")
-	for cnt in range(10, 0, -1):
-		print(cnt)
-		sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
 	load_framebuffer()
 	while True:
 		if config.video_enabled is True:
@@ -118,6 +105,10 @@ def run_no_switch():
 
 # Main program logic follows:
 if __name__ == '__main__':
+	print("Waiting for frame buffer to load")
+	for cnt in range(10, 0, -1):
+		print(cnt)
+		sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
 	if config.switch_used is True:
 		run_switch()
 	else:
