@@ -8,7 +8,7 @@ from datetime import date
 from time import sleep
 from gpiozero import Button
 
-videoPath = "https://drive.google.com/file/d/1mhGiDygE3X47jujLoYqewwhEJncvD5cP/view?usp=sharing"  # "/videos/Touch_the_temple.mp4"
+videoId = "1mhGiDygE3X47jujLoYqewwhEJncvD5cP"  # "/videos/Touch_the_temple.mp4"
 rtmpPath = "rtmp://127.0.0.1:1936/live/xyz"
 
 seasons = ["Winter", "Winter", "Spring", "Spring", "Spring", "Summer",
@@ -65,6 +65,7 @@ def download_video():
 	if not os.path.exists('video/Touch_the_temple.mp4'):
 		# urllib.urlretrieve(videoPath, "video/standby_video.mp4")
 		gdd.download_file_from_google_drive(file_id, "video/Touch_the_temple.mp4")
+
 
 def load_framebuffer():
 	today = date.today().strftime("%m/%d/%y")
