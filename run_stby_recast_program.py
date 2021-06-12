@@ -3,6 +3,7 @@ import random
 import urllib
 import signal
 import subprocess
+import var.config as config
 import google_drive_download as gdd
 from datetime import date
 from time import sleep
@@ -35,8 +36,12 @@ def still_music():
 			song_path = os.path.join(musicPath, song)
 			omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', song_path],
 										  stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
-			while switch[1].is_pressed and omxprocess.poll() is None:
-				sleep(1)
+			if config.switch_used is True:
+				while switch[1].is_pressed and omxprocess.poll() is None:
+					sleep(1)
+			else:
+				while omxprocess.poll() is None:
+					sleep(1)
 			if omxprocess.poll() is None:
 				omxprocess.stdin.write(b'q')
 			if not switch[1].is_pressed:
@@ -56,24 +61,22 @@ def play_video():
 
 
 def download_video():
-	# dir = os.listdir("/video")
-	# Download the file if it does not exist
-	# if len(dir) == 0:
-	# 	urllib.urlretrieve(videoPath, "standby_video.mp4")
-	# if not os.path.isfile(filename):
-		# urllib.urlretrieve(url, filename)
 	if not os.path.exists('video/touch_the_temple.mp4'):
-		# urllib.urlretrieve(videoPath, "video/standby_video.mp4")
 		gdd.download_file_from_google_drive(video_id, "video/touch_the_temple.mp4")
 
 
 def load_framebuffer():
-	today = date.today().strftime("%m/%d/%y")
-	cur_season = seasons[int(today[0:2])]
-	os.system('fbi -a --noverbose -T 1 -t 15 "/images/{}stakecenter.jpg"'.format(cur_season))
+	if use_temple_image is True:
+		image = "temple"
+	else:
+		today = date.today().strftime("%m/%d/%y")
+		cur_season = seasons[int(today[0:2])]
+		image = "{}stakecenter.jpg".format(cur_season)
+
+	os.system('fbi -a --noverbose -T 1 -t 15 "/images/{}"'.format(image))
 
 
-def run():
+def run_switch():
 	print("Waiting for frame buffer to load")
 	for cnt in range(10, 0, -1):
 		print(cnt)
@@ -84,11 +87,33 @@ def run():
 	load_framebuffer()
 	while True:
 		if switch[0].is_pressed:  # RTMP server
-			rtmp_stream()
+			if config.rtmp_enabled is True:
+				rtmp_stream()
+			else:
+				still_music()
 		elif switch[1].is_pressed:  # Music Only
-			still_music()
+			if config.music_enabled is True:
+				still_music()
+			else:
+				sleep(10)
 		else:  # Touch the Temple
 			play_video()
+
+
+def run_no_switch():
+	print("Waiting for frame buffer to load")
+	for cnt in range(10, 0, -1):
+		print(cnt)
+		sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
+	load_framebuffer()
+	while True:
+		if config.video_enabled is True:
+			play_video()
+		else:
+			if config.music_enabled is True:
+				still_music()
+			else:
+				sleep(10)
 
 
 # Main program logic follows:
