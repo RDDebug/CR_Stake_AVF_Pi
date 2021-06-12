@@ -118,4 +118,7 @@ def run_no_switch():
 
 # Main program logic follows:
 if __name__ == '__main__':
-	run()
+	if config.switch_used is True:
+		run_switch()
+	else:
+		run_no_switch()
