@@ -1,5 +1,6 @@
 import os
 import random
+import urllib
 import signal
 import subprocess
 from datetime import date
@@ -54,12 +55,14 @@ def play_video():
 
 
 def download_video():
-	dir = os.listdir("/video")
+	# dir = os.listdir("/video")
 	# Download the file if it does not exist
-	if len(dir) == 0:
-		urllib.urlretrieve(videoPath, "standby_video.mp4")
+	# if len(dir) == 0:
+	# 	urllib.urlretrieve(videoPath, "standby_video.mp4")
 	# if not os.path.isfile(filename):
 		# urllib.urlretrieve(url, filename)
+	if not os.path.exists('video/Touch_the_temple.mp4'):
+		urllib.urlretrieve(url, "video/{}".format(filename))
 
 
 def load_framebuffer():
@@ -70,7 +73,9 @@ def load_framebuffer():
 
 def run():
 	print("Waiting for frame buffer to load")
-	sleep(10)  # wait for the video drivers to start up so the frame buffer can be loaded
+	for cnt in range(10, 0, -1):
+		print(cnt)
+		sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
 	print("Downloading video if missing")
 	download_video()
 	print("Download complete")
