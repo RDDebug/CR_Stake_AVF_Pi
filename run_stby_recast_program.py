@@ -82,13 +82,13 @@ def run():
 	download_video()
 	print("Download complete")
 	load_framebuffer()
-	# while True:
-	if switch[0].is_pressed:  # RTMP server
-		rtmp_stream()
-	elif switch[1].is_pressed:  # Music Only
-		still_music()
-	else:  # Touch the Temple
-		play_video()
+	while True:
+		if switch[0].is_pressed:  # RTMP server
+			rtmp_stream()
+		elif switch[1].is_pressed:  # Music Only
+			still_music()
+		else:  # Touch the Temple
+			play_video()
 
 
 # Main program logic follows:
