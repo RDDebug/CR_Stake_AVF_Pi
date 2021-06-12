@@ -3,6 +3,7 @@ import random
 import urllib
 import signal
 import subprocess
+import google_drive_download as gdd
 from datetime import date
 from time import sleep
 from gpiozero import Button
@@ -62,8 +63,8 @@ def download_video():
 	# if not os.path.isfile(filename):
 		# urllib.urlretrieve(url, filename)
 	if not os.path.exists('video/Touch_the_temple.mp4'):
-		urllib.urlretrieve(videoPath, "video/standby_video.mp4")
-
+		# urllib.urlretrieve(videoPath, "video/standby_video.mp4")
+		gdd.download_file_from_google_drive(file_id, "video/Touch_the_temple.mp4")
 
 def load_framebuffer():
 	today = date.today().strftime("%m/%d/%y")
