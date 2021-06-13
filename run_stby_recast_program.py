@@ -23,7 +23,7 @@ def rmtp_stream():
 		omxprocess.stdin.write(b'q')
 
 
-def still_music():
+def still_music(control):
 	music_list = os.listdir("music")
 	while True:
 		random.shuffle(music_list)
@@ -32,7 +32,7 @@ def still_music():
 			omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', song_path],
 										  stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
 			if config.switch_used is True:
-				while switch[1].is_pressed and omxprocess.poll() is None:
+				while control.is_pressed and omxprocess.poll() is None:
 					sleep(1)
 			else:
 				while omxprocess.poll() is None:
@@ -41,7 +41,7 @@ def still_music():
 				omxprocess.stdin.write(b'q')
 			if not switch[1].is_pressed:
 				break
-		if not switch[1].is_pressed:
+		if not control.is_pressed:
 			break
 
 
@@ -57,7 +57,9 @@ def play_video():
 
 def download_video():
 	if not os.path.exists('video/{}'.format(config.video["title"])):
+        print("Downloading video {}".format(config.video["title"]))
 		gdd.download_file_from_google_drive(config.video["drive_id"], 'video/{}'.format(config.video["title"]))
+        print("Download complete")
 
 
 def load_framebuffer():
@@ -72,19 +74,17 @@ def load_framebuffer():
 
 
 def run_switch():
-	print("Downloading video if missing")
 	download_video()
-	print("Download complete")
 	load_framebuffer()
 	while True:
 		if switch[0].is_pressed:  # RTMP server
 			if config.rmtp_enabled is True:
 				rmtp_stream()
 			else:
-				still_music()
+				still_music(switch[0])
 		elif switch[1].is_pressed:  # Music Only
 			if config.music_enabled is True:
-				still_music()
+				still_music(switch[1])
 			else:
 				sleep(10)
 		else:  # Touch the Temple
@@ -92,6 +92,9 @@ def run_switch():
 
 
 def run_no_switch():
+    if config.video_enabled is True:      
+        print("Downloading video if missing")
+        download_video()
 	load_framebuffer()
 	while True:
 		if config.video_enabled is True:
