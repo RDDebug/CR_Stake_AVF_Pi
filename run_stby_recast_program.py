@@ -138,6 +138,7 @@ if __name__ == '__main__':
 	for cnt in range(10, 0, -1):
 		print(cnt)
 		sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
+	load_config()
 	if config["switch_used"] is True:
 		run_switch()
 	else:
