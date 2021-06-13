@@ -58,9 +58,9 @@ def play_video():
 
 def download_video():
 	if not os.path.exists('video/{}'.format(config["video"]["title"])):
-        print("Downloading video {}".format(config["video"]["title"]))
+		print("Downloading video {}".format(config["video"]["title"]))
 		gdd.download_file_from_google_drive(config["video"]["drive_id"], 'video/{}'.format(config["video"]["title"]))
-        print("Download complete")
+		print("Download complete")
 
 
 def load_framebuffer():
@@ -118,9 +118,9 @@ def run_switch():
 
 
 def run_no_switch():
-    if config["video_enabled"] is True:
-        print("Downloading video if missing")
-        download_video()
+	if config["video_enabled"] is True:
+		print("Downloading video if missing")
+		download_video()
 	load_framebuffer()
 	while True:
 		if config["video_enabled"] is True:
