@@ -109,7 +109,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.ini
+*.ini
 
 # Spyder project settings
 .spyderproject
@@ -130,10 +130,9 @@ dmypy.json
 .pyre/
 
 # videos
-video/
-.mp4
-.mov
-.mkv
-.wmv
-.flv
-.avi
+*.mp4
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.avi
