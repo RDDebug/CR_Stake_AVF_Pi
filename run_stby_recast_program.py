@@ -5,11 +5,11 @@ import random
 import urllib
 import signal
 import subprocess
-#import config
 import google_drive_download as gdd
 from datetime import date
 from time import sleep
 from gpiozero import Button
+import build_config
 from configparser import ConfigParser
 
 switch = [Button(23), Button(24)]
@@ -61,8 +61,15 @@ def download_video():
     video_config = eval(config["video"])
     if not os.path.exists('video/{}'.format(video_config["title"])):
         print("Downloading video {}".format(video_config["title"]))
-        gdd.download_file_from_google_drive(video_config["drive_id"], 'video/{}'.format(video_config["title"]))
-        print("Download complete")
+        try_again = True
+        while try_again:
+            try:
+                gdd.download_file_from_google_drive(video_config["drive_id"], 'video/{}'.format(video_config["title"]))
+                print("Download complete")
+                try_again = False
+            except ConnectionError:
+                print("Bad connection, trying again")
+                sleep(5)
 
 
 def load_framebuffer():
@@ -81,24 +88,8 @@ def load_config():
 	global config
 	config_object = ConfigParser()
 	if not os.path.exists("config.ini"):
-		config_object["CONFIG"] = {
-			"switch_used": True,
-			"video_enabled": False,
-			"rmtp_enabled": True,
-			"use_temple_image": False,
-			"music_enabled": True,
-
-			"video": {"title": "touch_the_temple.mp4","drive_id": "1mhGiDygE3X47jujLoYqewwhEJncvD5cP"},
-			"rtmpPath": "rtmp://127.0.0.1:1936/live/xyz",
-
-			"seasons": ["winter", "winter", "spring", "spring", "spring", "summer",
-				   "summer", "summer", "fall", "fall", "fall", "winter"]
-		}
-		with open('config.ini', 'w') as conf:
-			config_object.write(conf)
-	else:
-		config_object.read("config.ini")
-
+		build_config.build_default_config()
+	config_object.read("config.ini")
 	config = config_object["CONFIG"]
 
 
