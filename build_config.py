@@ -1,12 +1,14 @@
 from configparser import ConfigParser
+import os
 
 
 def yes_or_no(request):
     rtn = None
     while rtn is None:
         user_input = input('{} (y/n):'.format(request))
-        rtn = True if user_input.lower == 'y' else None
-        rtn = False if user_input.lower == 'n' else rtn
+        if len(user_input) is not 0:
+            rtn = True if user_input[0].lower() == "y" else None
+            rtn = False if user_input[0].lower() == 'n' else rtn
     return rtn
 
 
@@ -40,7 +42,7 @@ def month_to_season(month, season):
         new_season = season
 
 
-def configure_seasons:
+def configure_seasons():
     seasons = [("January", "winter"),
                ("February", "winter"),
                ("March", "spring"),
@@ -60,6 +62,7 @@ def configure_seasons:
     return new_seasons
 
 def build_config():
+    c_object = ConfigParser()
     switch_used = yes_or_no("Your setup uses a switch to enable multiple functions")
     if switch_used is False:
         video_enabled = yes_or_no("Your setup will play a video, rather than music and a still image")
@@ -87,7 +90,7 @@ def build_config():
     rtmp_config = "rtmp://127.0.0.1:1936/live/xyz" if rtmpPath is True else configure_rtmp_path()
     season_config = ["winter", "winter", "spring", "spring", "spring", "summer", "summer", "summer", "fall", "fall", "fall", "winter"] if seasons is True else configure_seasons()
 
-    config_object["CONFIG"] = {
+    c_object["CONFIG"] = {
         "switch_used": switch_used,
         "video_enabled": video_enabled,
         "rmtp_enabled": rtmp_enabled,
@@ -99,11 +102,13 @@ def build_config():
 
         "seasons": season_config
     }
+    with open('config.ini', 'w') as conf:
+        c_object.write(conf)
 
 
 def build_default_config():
-    object = ConfigParser()
-    object["CONFIG"] = {
+    c_object = ConfigParser()
+    c_object["CONFIG"] = {
         "switch_used": True,
         "video_enabled": False,
         "rmtp_enabled": True,
@@ -117,7 +122,7 @@ def build_default_config():
                     "summer", "summer", "fall", "fall", "fall", "winter"]
     }
     with open('config.ini', 'w') as conf:
-        object.write(conf)
+        c_object.write(conf)
 
 if __name__ == '__main__':
     new_config = True
@@ -126,7 +131,7 @@ if __name__ == '__main__':
         config_object.read("config.ini")
         print("Current config file:\n{}".format(config_object["CONFIG"]))
         new_config = yes_or_no("Overwrite current configs")
-    if yes_or_no("Use default config file") is True
+    if yes_or_no("Use default config file") is True:
         build_default_config()
     elif new_config:
         build_config()
