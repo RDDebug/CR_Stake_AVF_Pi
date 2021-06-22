@@ -1,5 +1,5 @@
 #  author: Jason Austin, Cedar Rapids Iowa Stake
-#  date last modified: 12-jun-2021
+#  date last modified: 22-jun-2021
 import os
 import random
 import urllib
@@ -14,6 +14,7 @@ from configparser import ConfigParser
 
 switch = [Button(23), Button(24)]
 config = {}
+home = os.path.expanduser("~")
 
 def rmtp_stream():
     omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', config["rtmpPath"]],
@@ -25,11 +26,11 @@ def rmtp_stream():
 
 
 def still_music(control):
-    music_list = os.listdir("music")
+    music_list = os.listdir("{}/cr_stake_avf_pi/music".format(home))
     while True:
         random.shuffle(music_list)
         for song in music_list:
-            song_path = os.path.join("music", song)
+            song_path = "{}/cr_stake_avf_pi/music/{}".format(home, song)
             omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', song_path],
                                           stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
             if config["switch_used"] == "True":
@@ -48,7 +49,7 @@ def still_music(control):
 
 def play_video():
     video_config = eval(config["video"])
-    omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', 'video/{}'.format(video_config["title"]), '--loop', '-b'],
+    omxprocess = subprocess.Popen(['omxplayer', '--adev', 'hdmi', '{}/cr_stake_avf_pi/video/{}'.format(home, video_config["title"]), '--loop', '-b'],
                                   stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
     while not switch[0].is_pressed and not switch[1].is_pressed and omxprocess.poll() is None:
         sleep(1)
@@ -59,12 +60,13 @@ def play_video():
 
 def download_video():
     video_config = eval(config["video"])
-    if not os.path.exists('video/{}'.format(video_config["title"])):
+    video_path = '{}/cr_stake_avf_pi/video/{}'.format(home, video_config["title"])
+    if not os.path.exists(video_path):
         print("Downloading video {}".format(video_config["title"]))
         try_again = True
         while try_again:
             try:
-                gdd.download_file_from_google_drive(video_config["drive_id"], 'video/{}'.format(video_config["title"]))
+                gdd.download_file_from_google_drive(video_config["drive_id"], video_path)
                 print("Download complete")
                 try_again = False
             except:
@@ -81,7 +83,7 @@ def load_framebuffer():
         cur_season = seasons[int(today[0:2])]
         image = "{}stakecenter.jpg".format(cur_season)
 
-    os.system('fbi -a --noverbose -T 1 -t 15 "images/{}"'.format(image))
+    os.system('fbi -a --noverbose -T 1 -t 15 "{}/cr_stake_avf_pi/images/{}"'.format(home, image))
 
 
 def load_config():
