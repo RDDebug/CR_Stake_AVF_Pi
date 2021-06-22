@@ -67,7 +67,7 @@ def download_video():
                 gdd.download_file_from_google_drive(video_config["drive_id"], 'video/{}'.format(video_config["title"]))
                 print("Download complete")
                 try_again = False
-            except ConnectionError:
+            except:
                 print("Bad connection, trying again")
                 sleep(5)
 
