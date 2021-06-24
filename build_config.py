@@ -64,26 +64,28 @@ def configure_seasons():
 def build_config():
     c_object = ConfigParser()
     switch_used = yes_or_no("Your setup uses a switch to enable multiple functions")
+    video_enabled = yes_or_no("Your setup will play a video")
+    if video_enabled is False:
+        video = False
+    else:
+        video = yes_or_no("Your set up will use the default video, 'touch the temple', provided by the Cedar Rapids stake")
     if switch_used is False:
-        video_enabled = yes_or_no("Your setup will play a video, rather than music and a still image")
         rtmp_enabled = False
     else:
-        video_enabled = False
-        rtmp_enabled = yes_or_no("You setup will be configured to accept and display external RTMP stream")
-    if video_enabled is False:
+        rtmp_enabled = yes_or_no("Your setup will be configured to accept and display an external RTMP stream")
+        if rtmp_enabled is True:
+            rtmpPath = yes_or_no("Your set up will use the default RTMP network path")
+        else:
+            rtmpPath = False
+    if switch_used is True or (switch_used is False and video_enabled is False):
         use_temple_image = yes_or_no("Your setup will display a still of a temple, rather than a seasonal image of the stake building")
         music_enabled = yes_or_no("While displaying a still image, your setup will play music")
-        video = False
-        rtmpPath = yes_or_no("You set up will use the default RTMP network path")
-        if use_temple_image is False:
-            seasons = yes_or_no("Your seasons align with those in Iowa")
-        else:
-            seasons = True
     else:
         use_temple_image = False
         music_enabled = False
-        video = yes_or_no("Your set up will use the default video, 'touch the temple', provided by the stake")
-        rtmpPath = False
+    if use_temple_image is False:
+        seasons = yes_or_no("Your seasons align with those in Iowa")
+    else:
         seasons = True
 
     video_config = {"title": "touch_the_temple.mp4", "drive_id": "1a42sJBMgshSQ94A_fA7jYJFZu0SlODVg"} if video is True else configure_video()

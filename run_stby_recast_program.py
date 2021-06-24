@@ -16,6 +16,7 @@ switch = [Button(23), Button(24)]
 config = {}
 home = os.path.expanduser("~")
 
+
 def rmtp_stream():
     omxprocess = subprocess.Popen(['omxplayer', '-o', 'hdmi', config["rtmpPath"]],
                                   stdin=subprocess.PIPE, stdout=None, stderr=None, bufsize=0)
@@ -87,55 +88,59 @@ def load_framebuffer():
 
 
 def load_config():
-	global config
-	config_object = ConfigParser()
-	if not os.path.exists("config.ini"):
-		build_config.build_default_config()
-	config_object.read("config.ini")
-	config = config_object["CONFIG"]
+    global config
+    config_object = ConfigParser()
+    if not os.path.exists("config.ini"):
+        build_config.build_default_config()
+    config_object.read("config.ini")
+    config = config_object["CONFIG"]
 
 
 def run_switch():
-	download_video()
-	load_framebuffer()
-	while True:
-		if switch[0].is_pressed:  # RTMP server
-			if config["rmtp_enabled"] == "True":
-				rmtp_stream()
-			else:
-				still_music(switch[0])
-		elif switch[1].is_pressed:  # Music Only
-			if config["music_enabled"] == "True":
-				still_music(switch[1])
-			else:
-				sleep(10)
-		else:  # Touch the Temple
-			play_video()
+    if config["video_enabled"] == "True":
+        print("Downloading video if missing")
+        download_video()
+    load_framebuffer()
+    while True:
+        if switch[0].is_pressed:  # RTMP server
+            if config["rmtp_enabled"] == "True":
+                rmtp_stream()
+            else:
+                still_music(switch[0])
+        elif switch[1].is_pressed:  # Music Only
+            if config["music_enabled"] == "True":
+                still_music(switch[1])
+            else:
+                sleep(10)
+        elif config["video_enabled"] == "True":
+            play_video()
+        else:
+            sleep(2)
 
 
 def run_no_switch():
-	if config["video_enabled"] == "True":
-		print("Downloading video if missing")
-		download_video()
-	load_framebuffer()
-	while True:
-		if config["video_enabled"] == "True":
-			play_video()
-		else:
-			if config["music_enabled"] == "True":
-				still_music(switch[0])
-			else:
-				sleep(10)
+    if config["video_enabled"] == "True":
+        print("Downloading video if missing")
+        download_video()
+    load_framebuffer()
+    while True:
+        if config["video_enabled"] == "True":
+            play_video()
+        else:
+            if config["music_enabled"] == "True":
+                still_music(switch[0])
+            else:
+                sleep(10)
 
 
 # Main program logic follows:
 if __name__ == '__main__':
-	print("Waiting for frame buffer to load")
-	for cnt in range(10, 0, -1):
-		print(cnt)
-		sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
-	load_config()
-	if config["switch_used"] == "True":
-		run_switch()
-	else:
-		run_no_switch()
+    print("Waiting for frame buffer to load")
+    for cnt in range(10, 0, -1):
+        print(cnt)
+        sleep(1)  # wait for the video drivers to start up so the frame buffer can be loaded
+    load_config()
+    if config["switch_used"] == "True":
+        run_switch()
+    else:
+        run_no_switch()
